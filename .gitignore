@@ -1,0 +1,15 @@
+.agent-world.env
+__pycache__/
+.DS_Store
+
+QQgroup-annual-report-analyzer
+WeFlow
+claude-code-source
+doc
+ds-free-api-v0.2.4-macos-x86_64
+exes
+llm-wechat
+texts
+wechat.png
+agent_world_register.py
+wechat.png
