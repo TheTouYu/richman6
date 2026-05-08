@@ -1,5 +1,7 @@
 import {
   MAP_LENGTH,
+  MINI_BOARD,
+  ROUTE_POINTS,
   TILE_EVENT,
   TILE_PROPERTY,
   TILE_REWARD,
@@ -7,33 +9,30 @@ import {
   TILE_START,
   TILE_TRAP
 } from './config'
+import type { MatchFlow } from './game-state'
+
+export function gstsServerWrapTile(tileIndex: bigint, f: MatchFlow) {
+  let wrapped = tileIndex
+  if (bool(f.greaterThanOrEqualTo(tileIndex, MAP_LENGTH))) {
+    wrapped = f.subtraction(tileIndex, MAP_LENGTH)
+  }
+  if (bool(f.lessThan(wrapped, 0n))) {
+    wrapped = f.addition(wrapped, MAP_LENGTH)
+  }
+  return wrapped
+}
 
 export function gstsServerGetTileType(tileIndex: bigint) {
   let typeCode = TILE_PROPERTY
-  if (bool(tileIndex === 0n) || bool(tileIndex === 16n)) {
+  if (bool(tileIndex === 0n)) {
     typeCode = TILE_START
-  } else if (
-    bool(tileIndex === 2n) ||
-    bool(tileIndex === 10n) ||
-    bool(tileIndex === 18n) ||
-    bool(tileIndex === 26n)
-  ) {
+  } else if (bool(tileIndex === 2n) || bool(tileIndex === 10n)) {
     typeCode = TILE_REWARD
-  } else if (
-    bool(tileIndex === 4n) ||
-    bool(tileIndex === 12n) ||
-    bool(tileIndex === 20n) ||
-    bool(tileIndex === 28n)
-  ) {
+  } else if (bool(tileIndex === 4n) || bool(tileIndex === 12n)) {
     typeCode = TILE_EVENT
-  } else if (
-    bool(tileIndex === 6n) ||
-    bool(tileIndex === 14n) ||
-    bool(tileIndex === 22n) ||
-    bool(tileIndex === 30n)
-  ) {
+  } else if (bool(tileIndex === 6n) || bool(tileIndex === 14n)) {
     typeCode = TILE_SHOP
-  } else if (bool(tileIndex === 8n) || bool(tileIndex === 24n)) {
+  } else if (bool(tileIndex === 8n)) {
     typeCode = TILE_TRAP
   }
   return typeCode
@@ -41,55 +40,52 @@ export function gstsServerGetTileType(tileIndex: bigint) {
 
 export function gstsServerGetPropertyPrice(tileIndex: bigint) {
   let price = 0n
-  if (bool(tileIndex === 1n) || bool(tileIndex === 17n)) {
-    price = 320n
-  } else if (bool(tileIndex === 3n) || bool(tileIndex === 19n)) {
-    price = 360n
-  } else if (bool(tileIndex === 5n) || bool(tileIndex === 21n)) {
+  if (bool(tileIndex === 1n)) {
+    price = 260n
+  } else if (bool(tileIndex === 3n)) {
+    price = 300n
+  } else if (bool(tileIndex === 5n)) {
+    price = 340n
+  } else if (bool(tileIndex === 7n)) {
+    price = 380n
+  } else if (bool(tileIndex === 9n)) {
     price = 420n
-  } else if (bool(tileIndex === 7n) || bool(tileIndex === 23n)) {
+  } else if (bool(tileIndex === 11n)) {
     price = 460n
-  } else if (bool(tileIndex === 9n) || bool(tileIndex === 25n)) {
+  } else if (bool(tileIndex === 13n)) {
     price = 520n
-  } else if (bool(tileIndex === 11n) || bool(tileIndex === 27n)) {
-    price = 560n
-  } else if (bool(tileIndex === 13n) || bool(tileIndex === 29n)) {
-    price = 620n
-  } else if (bool(tileIndex === 15n) || bool(tileIndex === 31n)) {
-    price = 680n
+  } else if (bool(tileIndex === 15n)) {
+    price = 580n
   }
   return price
 }
 
 export function gstsServerGetPropertyBaseRent(tileIndex: bigint) {
   let rent = 0n
-  if (bool(tileIndex === 1n) || bool(tileIndex === 17n)) {
-    rent = 90n
-  } else if (bool(tileIndex === 3n) || bool(tileIndex === 19n)) {
-    rent = 110n
-  } else if (bool(tileIndex === 5n) || bool(tileIndex === 21n)) {
-    rent = 130n
-  } else if (bool(tileIndex === 7n) || bool(tileIndex === 23n)) {
-    rent = 150n
-  } else if (bool(tileIndex === 9n) || bool(tileIndex === 25n)) {
-    rent = 170n
-  } else if (bool(tileIndex === 11n) || bool(tileIndex === 27n)) {
-    rent = 190n
-  } else if (bool(tileIndex === 13n) || bool(tileIndex === 29n)) {
-    rent = 210n
-  } else if (bool(tileIndex === 15n) || bool(tileIndex === 31n)) {
-    rent = 230n
+  if (bool(tileIndex === 1n)) {
+    rent = 60n
+  } else if (bool(tileIndex === 3n)) {
+    rent = 80n
+  } else if (bool(tileIndex === 5n)) {
+    rent = 100n
+  } else if (bool(tileIndex === 7n)) {
+    rent = 120n
+  } else if (bool(tileIndex === 9n)) {
+    rent = 140n
+  } else if (bool(tileIndex === 11n)) {
+    rent = 160n
+  } else if (bool(tileIndex === 13n)) {
+    rent = 180n
+  } else if (bool(tileIndex === 15n)) {
+    rent = 200n
   }
   return rent
 }
 
-export function gstsServerWrapTile(tileIndex: bigint) {
-  let wrapped = tileIndex
-  if (bool(tileIndex >= MAP_LENGTH)) {
-    wrapped = tileIndex - MAP_LENGTH
-  }
-  if (bool(wrapped < 0n)) {
-    wrapped = wrapped + MAP_LENGTH
-  }
-  return wrapped
+export function gstsServerGetTileLabel(tileIndex: bigint) {
+  return MINI_BOARD[idx(tileIndex)].label
+}
+
+export function gstsServerGetRoutePoint(tileIndex: bigint) {
+  return ROUTE_POINTS[idx(tileIndex)]
 }

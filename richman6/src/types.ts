@@ -12,15 +12,9 @@ export type CardCategory = 'movement' | 'property' | 'block' | 'defense'
 
 export type CardWindow = 'before_roll' | 'after_roll' | 'after_land' | 'before_pay'
 
-export interface PlayerState {
-  id: bigint
-  position: bigint
-  cash: bigint
-  coupons: bigint
-  hand: string[]
-  statuses: string[]
-  isAlive: boolean
-}
+export type RoleTrack = 'economy' | 'disrupt' | 'control' | 'balance'
+
+export type CompanionTrack = 'economy' | 'shield'
 
 export interface TileConfig {
   index: bigint
@@ -28,14 +22,7 @@ export interface TileConfig {
   propertyGroup: PropertyGroup
   price: bigint
   baseRent: bigint
-  eventTag: string
-}
-
-export interface PropertyState {
-  index: bigint
-  ownerId: bigint
-  level: bigint
-  isSealed: boolean
+  label: string
 }
 
 export interface CardDef {
@@ -43,15 +30,19 @@ export interface CardDef {
   category: CardCategory
   window: CardWindow
   targetRule: string
-  charges: bigint
   summary: string
 }
 
-export interface MatchState {
-  currentPlayer: bigint
-  currentRound: bigint
-  currentDice: bigint
-  mapLength: bigint
-  gameOver: boolean
-  winnerId: bigint
+export interface RoleDef {
+  id: string
+  label: string
+  track: RoleTrack
+  summary: string
+}
+
+export interface CompanionDef {
+  id: string
+  label: string
+  track: CompanionTrack
+  summary: string
 }
