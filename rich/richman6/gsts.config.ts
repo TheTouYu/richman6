@@ -3,13 +3,7 @@ import type { GstsConfig } from 'genshin-ts'
 const config: GstsConfig = {
   compileRoot: '.',
   entries: ['./src'],
-  outDir: './dist',
-  inject: {
-    gameRegion: 'China',
-    playerId: 110170759,
-    mapId: 1073741832,
-    nodeGraphId: 1073741825
-  }
+  outDir: './dist'
 }
 
 export default config

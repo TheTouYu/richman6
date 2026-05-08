@@ -23,6 +23,5 @@
   "search.exclude": {
     "package-lock.json": true
   },
-  "files.eol": "\n",
-  "js/ts.tsdk.path": "node_modules/typescript/lib"
+  "files.eol": "\n"
 }

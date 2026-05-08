@@ -5,6 +5,9 @@
     "outDir": "dist",
     "typeRoots": ["./node_modules/genshin-ts/types", "./node_modules/@types"],
     "types": ["gsts", "node"]
-  }, 
+  },
+   "inject": {
+      "mapId": 1073741833,
+    },
   "include": ["src", "gsts.config.ts"]
 }
