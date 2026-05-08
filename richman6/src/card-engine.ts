@@ -47,7 +47,9 @@ export function gstsServerConsumeCard(playerIndex: bigint, cardId: string, f: Ma
   }
   if (bool(consumed)) {
     gstsServerSetPlayerHand(playerIndex, hand, f)
-    gstsServerLogLine('[Richman6] P' + str(playerIndex + 1n) + ' 使用卡牌: ' + gstsServerGetCardSummary(cardId))
+    gstsServerLogLine('[Richman6] 使用卡牌')
+    gstsServerLogLine(str(playerIndex + 1n))
+    gstsServerLogLine(gstsServerGetCardSummary(cardId))
   }
   return consumed
 }

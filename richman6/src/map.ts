@@ -1,7 +1,5 @@
 import {
   MAP_LENGTH,
-  MINI_BOARD,
-  ROUTE_POINTS,
   TILE_EVENT,
   TILE_PROPERTY,
   TILE_REWARD,
@@ -83,9 +81,37 @@ export function gstsServerGetPropertyBaseRent(tileIndex: bigint) {
 }
 
 export function gstsServerGetTileLabel(tileIndex: bigint) {
-  return MINI_BOARD[idx(tileIndex)].label
-}
-
-export function gstsServerGetRoutePoint(tileIndex: bigint) {
-  return ROUTE_POINTS[idx(tileIndex)]
+  let label = '起点环'
+  if (bool(tileIndex === 1n)) {
+    label = '住区 A'
+  } else if (bool(tileIndex === 2n)) {
+    label = '补给格'
+  } else if (bool(tileIndex === 3n)) {
+    label = '住区 B'
+  } else if (bool(tileIndex === 4n)) {
+    label = '事件格'
+  } else if (bool(tileIndex === 5n)) {
+    label = '工坊 A'
+  } else if (bool(tileIndex === 6n)) {
+    label = '商店格'
+  } else if (bool(tileIndex === 7n)) {
+    label = '工坊 B'
+  } else if (bool(tileIndex === 8n)) {
+    label = '陷阱格'
+  } else if (bool(tileIndex === 9n)) {
+    label = '店铺 A'
+  } else if (bool(tileIndex === 10n)) {
+    label = '奖励格'
+  } else if (bool(tileIndex === 11n)) {
+    label = '店铺 B'
+  } else if (bool(tileIndex === 12n)) {
+    label = '事件格'
+  } else if (bool(tileIndex === 13n)) {
+    label = '金融 A'
+  } else if (bool(tileIndex === 14n)) {
+    label = '商店格'
+  } else if (bool(tileIndex === 15n)) {
+    label = '金融 B'
+  }
+  return label
 }

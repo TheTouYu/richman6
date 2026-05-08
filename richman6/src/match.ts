@@ -27,9 +27,9 @@ export function gstsServerFinalizeByAssets(f: MatchFlow) {
   }
   f.set('winnerId', winnerId)
   f.set('gameOver', true)
-  gstsServerLogLine(
-    '[Richman6] 10 回合结束，P1=' + str(player0Assets) + ' / P2=' + str(player1Assets)
-  )
+  gstsServerLogLine('[Richman6] 10 回合结束，总资产结算')
+  gstsServerLogLine(str(player0Assets))
+  gstsServerLogLine(str(player1Assets))
   return 0n
 }
 
@@ -76,7 +76,9 @@ export function gstsServerRollDice(playerIndex: bigint, f: MatchFlow) {
     dice = forcedDice
   }
   f.set('currentDice', dice)
-  gstsServerLogLine('[Richman6] P' + str(playerIndex + 1n) + ' 掷出 ' + str(dice))
+  gstsServerLogLine('[Richman6] 掷骰结果')
+  gstsServerLogLine(str(playerIndex + 1n))
+  gstsServerLogLine(str(dice))
   return dice
 }
 
@@ -113,42 +115,50 @@ export function gstsServerCheckWinCondition(f: MatchFlow) {
 }
 
 export function gstsServerRunTurn(f: MatchFlow) {
+  let shouldRun = true
   if (bool(f.get('gameOver'))) {
-    gstsServerLogLine('[Richman6] 游戏结束，胜者 P' + str(f.get('winnerId') + 1n))
-    return 0n
+    gstsServerLogLine('[Richman6] 游戏结束，胜者')
+    gstsServerLogLine(str(f.get('winnerId') + 1n))
+    shouldRun = false
   }
 
   const playerIndex = f.get('currentPlayer')
-  f.set('currentPhase', 'turn_start')
-  gstsServerLogLine('[Richman6] 第 ' + str(f.get('currentRound')) + ' 回合，P' + str(playerIndex + 1n))
+  if (bool(shouldRun)) {
+    f.set('currentPhase', 'turn_start')
+    gstsServerLogLine('[Richman6] 新回合')
+    gstsServerLogLine(str(f.get('currentRound')))
+    gstsServerLogLine(str(playerIndex + 1n))
+  }
 
-  if (bool(gstsServerGetStopTurns(playerIndex, f) > 0n)) {
+  if (bool(shouldRun) && bool(gstsServerGetStopTurns(playerIndex, f) > 0n)) {
     gstsServerLogLine('[Richman6] 玩家被停留，跳过本回合')
     gstsServerSetStopTurns(playerIndex, f.subtraction(gstsServerGetStopTurns(playerIndex, f), 1n), f)
     gstsServerTickCompanion(playerIndex, f)
     gstsServerAdvanceRoundState(playerIndex, f)
     gstsServerCheckWinCondition(f)
-    return 0n
+    shouldRun = false
   }
 
-  f.set('currentPhase', 'before_roll')
-  gstsServerRunRolePrototype(playerIndex, f)
+  if (bool(shouldRun)) {
+    f.set('currentPhase', 'before_roll')
+    gstsServerRunRolePrototype(playerIndex, f)
 
-  const dice = gstsServerRollDice(playerIndex, f)
-  f.set('currentPhase', 'after_roll')
-  const steps = gstsServerPlanAfterRollMovement(playerIndex, dice, f)
+    const dice = gstsServerRollDice(playerIndex, f)
+    f.set('currentPhase', 'after_roll')
+    const steps = gstsServerPlanAfterRollMovement(playerIndex, dice, f)
 
-  f.set('currentPhase', 'move')
-  const landingTile = gstsServerMovePlayer(playerIndex, steps, f)
+    f.set('currentPhase', 'move')
+    const landingTile = gstsServerMovePlayer(playerIndex, steps, f)
 
-  f.set('currentPhase', 'after_land')
-  gstsServerResolveLanding(playerIndex, landingTile, f)
-  gstsServerApplyAfterLandCards(playerIndex, f)
-  gstsServerTickCompanion(playerIndex, f)
-  gstsServerCheckWinCondition(f)
+    f.set('currentPhase', 'after_land')
+    gstsServerResolveLanding(playerIndex, landingTile, f)
+    gstsServerApplyAfterLandCards(playerIndex, f)
+    gstsServerTickCompanion(playerIndex, f)
+    gstsServerCheckWinCondition(f)
 
-  if (bool(f.get('gameOver') === false)) {
-    gstsServerAdvanceRoundState(playerIndex, f)
+    if (bool(f.get('gameOver') === false)) {
+      gstsServerAdvanceRoundState(playerIndex, f)
+    }
   }
 
   f.set('currentPhase', 'idle')

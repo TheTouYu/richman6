@@ -2,7 +2,7 @@ import type { GstsConfig } from 'genshin-ts'
 
 const config: GstsConfig = {
   compileRoot: '.',
-  entries: ['./src/main.ts'],
+  entries: ['./src'],
   outDir: './dist'
 }
 

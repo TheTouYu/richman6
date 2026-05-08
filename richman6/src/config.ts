@@ -46,25 +46,6 @@ export const EMPTY_PROPERTY_LEVELS = createFilledBigintArray(16, 0n)
 export const INITIAL_PLAYER_0_HAND = ['MV-03', 'PR-01', 'PR-03', 'ST-01', 'BL-01', '']
 export const INITIAL_PLAYER_1_HAND = ['MV-01', 'MV-02', 'PR-06', 'ST-02', 'BL-04', '']
 
-export const ROUTE_POINTS: [number, number, number][] = [
-  [0, 0, 0],
-  [4, 0, 0],
-  [8, 0, 0],
-  [12, 0, 0],
-  [16, 0, 0],
-  [16, 0, 4],
-  [16, 0, 8],
-  [16, 0, 12],
-  [16, 0, 16],
-  [12, 0, 16],
-  [8, 0, 16],
-  [4, 0, 16],
-  [0, 0, 16],
-  [0, 0, 12],
-  [0, 0, 8],
-  [0, 0, 4]
-]
-
 export const MINI_BOARD: TileConfig[] = [
   { index: 0n, type: 'start', propertyGroup: 'core', price: 0n, baseRent: 0n, label: '起点环' },
   { index: 1n, type: 'property', propertyGroup: 'residential', price: 260n, baseRent: 60n, label: '住区 A' },

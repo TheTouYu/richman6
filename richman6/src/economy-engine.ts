@@ -12,6 +12,7 @@ import {
   gstsServerAddPlayerCash,
   gstsServerAddPlayerCoupons,
   gstsServerGetPlayerCash,
+  gstsServerGetPlayerCoupons,
   gstsServerGetPlayerPosition,
   gstsServerGetPropertyLevel,
   gstsServerGetPropertyOwner,
@@ -28,7 +29,7 @@ import {
   gstsServerTryBlockAttackWithShield
 } from './card-engine'
 import { MAP_LENGTH, TILE_EVENT, TILE_PROPERTY, TILE_REWARD, TILE_SHOP, TILE_START } from './config'
-import { gstsServerGetPropertyBaseRent, gstsServerGetPropertyPrice, gstsServerGetRoutePoint, gstsServerGetTileType, gstsServerWrapTile } from './map'
+import { gstsServerGetPropertyBaseRent, gstsServerGetPropertyPrice, gstsServerGetTileType, gstsServerWrapTile } from './map'
 import { gstsServerLogLanding, gstsServerLogLine, gstsServerLogSnapshot } from './ui-log'
 import type { MatchFlow } from './game-state'
 
@@ -45,7 +46,39 @@ export function gstsServerGetRentForProperty(tileIndex: bigint, level: bigint, p
 }
 
 export function gstsServerPresentPlayerPosition(playerIndex: bigint, tileIndex: bigint, f: MatchFlow) {
-  f.teleportPlayer(player(playerIndex + 1n), gstsServerGetRoutePoint(tileIndex), [0, 0, 0])
+  if (bool(tileIndex === 1n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [4, 0, 0], [0, 0, 0])
+  } else if (bool(tileIndex === 2n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [8, 0, 0], [0, 0, 0])
+  } else if (bool(tileIndex === 3n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [12, 0, 0], [0, 0, 0])
+  } else if (bool(tileIndex === 4n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [16, 0, 0], [0, 0, 0])
+  } else if (bool(tileIndex === 5n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [16, 0, 4], [0, 0, 0])
+  } else if (bool(tileIndex === 6n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [16, 0, 8], [0, 0, 0])
+  } else if (bool(tileIndex === 7n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [16, 0, 12], [0, 0, 0])
+  } else if (bool(tileIndex === 8n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [16, 0, 16], [0, 0, 0])
+  } else if (bool(tileIndex === 9n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [12, 0, 16], [0, 0, 0])
+  } else if (bool(tileIndex === 10n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [8, 0, 16], [0, 0, 0])
+  } else if (bool(tileIndex === 11n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [4, 0, 16], [0, 0, 0])
+  } else if (bool(tileIndex === 12n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [0, 0, 16], [0, 0, 0])
+  } else if (bool(tileIndex === 13n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [0, 0, 12], [0, 0, 0])
+  } else if (bool(tileIndex === 14n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [0, 0, 8], [0, 0, 0])
+  } else if (bool(tileIndex === 15n)) {
+    f.teleportPlayer(player(playerIndex + 1n), [0, 0, 4], [0, 0, 0])
+  } else {
+    f.teleportPlayer(player(playerIndex + 1n), [0, 0, 0], [0, 0, 0])
+  }
   return 0n
 }
 
@@ -56,7 +89,8 @@ export function gstsServerMovePlayer(playerIndex: bigint, steps: bigint, f: Matc
 
   if (bool(f.greaterThanOrEqualTo(rawPosition, MAP_LENGTH))) {
     gstsServerAddPlayerCash(playerIndex, PASS_START_REWARD, f)
-    gstsServerLogLine('[Richman6] P' + str(playerIndex + 1n) + ' 经过起点')
+    gstsServerLogLine('[Richman6] 经过起点')
+    gstsServerLogLine(str(playerIndex + 1n))
   } else if (bool(steps === 0n)) {
     gstsServerAddPlayerCash(playerIndex, STOPPED_START_BONUS, f)
   }
@@ -70,56 +104,60 @@ export function gstsServerMovePlayer(playerIndex: bigint, steps: bigint, f: Matc
 
 export function gstsServerTryBuyProperty(playerIndex: bigint, tileIndex: bigint, f: MatchFlow) {
   let price = gstsServerGetPropertyPrice(tileIndex)
+  let bought = false
   price = f.subtraction(price, gstsServerGetBuyDiscount(playerIndex, f))
   if (bool(gstsServerGetPlayerCash(playerIndex, f) >= price)) {
-    gstsServerAddPlayerCash(playerIndex, -price, f)
+    gstsServerAddPlayerCash(playerIndex, f.subtraction(0n, price), f)
     gstsServerSetPropertyOwner(tileIndex, playerIndex, f)
     gstsServerSetPropertyLevel(tileIndex, 1n, f)
-    gstsServerLogLine('[Richman6] P' + str(playerIndex + 1n) + ' 购入地产')
-    return true
+    gstsServerLogLine('[Richman6] 购入地产')
+    gstsServerLogLine(str(playerIndex + 1n))
+    bought = true
   }
-  return false
+  return bought
 }
 
 export function gstsServerTryUpgradeProperty(playerIndex: bigint, tileIndex: bigint, f: MatchFlow) {
   const currentLevel = gstsServerGetPropertyLevel(tileIndex, f)
-  if (bool(currentLevel >= 2n)) {
-    return false
-  }
+  let upgraded = false
   let cost = gstsServerGetUpgradeCost(tileIndex)
-  cost = f.subtraction(cost, gstsServerGetUpgradeDiscount(playerIndex, f))
-  if (bool(gstsServerGetPlayerCash(playerIndex, f) >= cost)) {
-    gstsServerAddPlayerCash(playerIndex, -cost, f)
-    gstsServerSetPropertyLevel(tileIndex, f.addition(currentLevel, 1n), f)
-    gstsServerLogLine('[Richman6] P' + str(playerIndex + 1n) + ' 升级地产')
-    return true
+  if (bool(currentLevel < 2n)) {
+    cost = f.subtraction(cost, gstsServerGetUpgradeDiscount(playerIndex, f))
+    if (bool(gstsServerGetPlayerCash(playerIndex, f) >= cost)) {
+      gstsServerAddPlayerCash(playerIndex, f.subtraction(0n, cost), f)
+      gstsServerSetPropertyLevel(tileIndex, f.addition(currentLevel, 1n), f)
+      gstsServerLogLine('[Richman6] 升级地产')
+      gstsServerLogLine(str(playerIndex + 1n))
+      upgraded = true
+    }
   }
-  return false
+  return upgraded
 }
 
 export function gstsServerTryPayRent(playerIndex: bigint, ownerId: bigint, tileIndex: bigint, f: MatchFlow) {
+  let shouldCollect = true
   if (bool(f.get('sealedPropertyIndex') === tileIndex) && bool(f.get('sealedRoundsLeft') > 0n)) {
     gstsServerLogLine('[Richman6] 该地产处于封盘状态，本次不收费')
-    return 0n
+    shouldCollect = false
   }
-
-  if (bool(gstsServerShouldWaiveRent(playerIndex, f))) {
+  if (bool(shouldCollect) && bool(gstsServerShouldWaiveRent(playerIndex, f))) {
     gstsServerLogLine('[Richman6] 差旅补贴免除了本次租金')
-    return 0n
+    shouldCollect = false
   }
-
-  const level = gstsServerGetPropertyLevel(tileIndex, f)
-  const rent = gstsServerGetRentForProperty(tileIndex, level, playerIndex, f)
-  gstsServerAddPlayerCash(playerIndex, -rent, f)
-  gstsServerAddPlayerCash(ownerId, rent, f)
-  gstsServerLogLine('[Richman6] 已完成租金结算')
+  if (bool(shouldCollect)) {
+    const level = gstsServerGetPropertyLevel(tileIndex, f)
+    const rent = gstsServerGetRentForProperty(tileIndex, level, playerIndex, f)
+    gstsServerAddPlayerCash(playerIndex, f.subtraction(0n, rent), f)
+    gstsServerAddPlayerCash(ownerId, rent, f)
+    gstsServerLogLine('[Richman6] 已完成租金结算')
+  }
   return 0n
 }
 
 export function gstsServerResolveTrap(playerIndex: bigint, tileIndex: bigint, f: MatchFlow) {
   if (bool(tileIndex === f.get('trapTile'))) {
     if (bool(gstsServerTryBlockAttackWithShield(playerIndex, f) === false)) {
-      gstsServerAddPlayerCash(playerIndex, -TRAP_PENALTY, f)
+      gstsServerAddPlayerCash(playerIndex, f.subtraction(0n, TRAP_PENALTY), f)
       gstsServerLogLine('[Richman6] 触发延时陷阱')
     }
     f.set('trapTile', -1n)
@@ -163,19 +201,21 @@ export function gstsServerResolveLanding(playerIndex: bigint, tileIndex: bigint,
     gstsServerResolveEconomyTile(playerIndex, tileType, f)
   }
 
+  const coupons = gstsServerGetPlayerCoupons(playerIndex, f)
   gstsServerLogSnapshot(
     playerIndex,
     gstsServerGetPlayerCash(playerIndex, f),
-    f.get(bool(playerIndex === 0n) ? 'player0Coupons' : 'player1Coupons'),
+    coupons,
     tileIndex
   )
   return 0n
 }
 
 export function gstsServerGetTotalAssets(playerIndex: bigint, f: MatchFlow) {
+  const coupons = gstsServerGetPlayerCoupons(playerIndex, f)
   let total = f.addition(
     gstsServerGetPlayerCash(playerIndex, f),
-    f.multiplication(bool(playerIndex === 0n) ? f.get('player0Coupons') : f.get('player1Coupons'), 100n)
+    f.multiplication(coupons, 100n)
   )
   let cursor = 0n
   while (bool(cursor < MAP_LENGTH)) {
